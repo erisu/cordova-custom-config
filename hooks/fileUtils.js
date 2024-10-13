@@ -58,6 +58,14 @@ var fileUtils = (function(){
 
     // Returns project name from config.xml
     fileUtils.getProjectName = function(){
+        // Cordova-iOS 8 and greater has a static app name of "App".
+        // Check for "App.xcodeproj" and return "App" if it exists.
+        const xcodeprojPath = path.join(context.opts.projectRoot, 'platforms', 'ios', 'App.xcodeproj');
+        if(fs.existsSync(xcodeprojPath)) {
+            return 'App';
+        }
+
+        // Fallback to original behavior. Cordova-iOS < 8
         if(!configXmlData) {
             fileUtils.getConfigXml();
         }
