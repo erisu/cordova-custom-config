@@ -56,20 +56,17 @@ var fileUtils = (function(){
         return settings;
     };
 
-    // Returns project name from config.xml
+    /**
+     * Used to get the name of the application from the xcodeCordovaProj directory path.
+     * The xcodeCordovaProj directory path is defined in the locations property of the Cordova-iOS platform's API.
+     */
     fileUtils.getProjectName = function(){
-        // Cordova-iOS 8 and greater has a static app name of "App".
-        // Check for "App.xcodeproj" and return "App" if it exists.
-        const xcodeprojPath = path.join(context.opts.projectRoot, 'platforms', 'ios', 'App.xcodeproj');
-        if(fs.existsSync(xcodeprojPath)) {
-            return 'App';
-        }
+        const projectRoot = context.opts.projectRoot;
+        const platformPath = path.join(projectRoot, 'platforms', 'ios');
+        const cordova_ios = require('cordova-ios');
+        const iosProject = new cordova_ios('ios', platformPath);
 
-        // Fallback to original behavior. Cordova-iOS < 8
-        if(!configXmlData) {
-            fileUtils.getConfigXml();
-        }
-        return configXmlData.findtext('name');
+        return path.basename(iosProject.locations.xcodeCordovaProj);
     };
 
     fileUtils.fileExists = function(filePath){
